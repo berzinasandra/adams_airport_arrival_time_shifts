@@ -1,8 +1,5 @@
-import json
-import os
 import pymongo
 from datetime import datetime
-from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.exceptions import AirflowFailException
 from airflow.models import Variable
 
@@ -37,18 +34,6 @@ def upload_to_mongo(ti, **context) -> None:
     Raises:
         AirflowFailException: Exception is raised when connection with MongoDB fails
     """
-    # FIXME: use Hook
-    # try:
-    #     hook = MongoHook(mongo_conn_id='mongo_default')
-    #     client = hook.get_conn()
-    #     # db = client.flights
-    #     # currency_collection=db.currency_collection
-    #     print(f"Connected to MongoDB - {client}")
-    #     # d=json.loads(context["result"])
-    #     # currency_collection.insert_one(d)
-    # except Exception as e:
-    #     print(f"Error connecting to MongoDB -- {e}")
-
     try:
         collection = _create_connection_with_collection()
         data = ti.xcom_pull(key="flights_raw")
