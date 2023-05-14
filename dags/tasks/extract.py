@@ -1,32 +1,47 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 import requests
-import sys
-import optparse
+import os
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
+from airflow.models import Variable
 
-def extract_data_from_api():
-    url = 'https://api.schiphol.nl/public-flights/flights'
+API_APP_ID = Variable.get("secret_API_APP_ID")
+API_APP_KEY = Variable.get("secret_API_APP_KEY")
+
+
+def extract_data_from_api(ti, execution_date) -> None:
+    """Extracts flight data from Amsterdam Airport Schiphol API based on date
+
+    Args:
+        ti: Airflow's task instance
+        execution_date: Airflow execution date
+    """
+    today = datetime.strftime(execution_date, "%Y-%m-%d")
+    tomorrow = datetime.strftime((execution_date + relativedelta(days=1)), "%Y-%m-%d")
 
     headers = {
-      'accept': 'application/json',
-	  'resourceversion': 'v4',
-      'app_id': '6628c1a3',#'options.app_id',
-	  'app_key': '8bb8007f390d5da534f8592c2a48cf1b' #'options.app_key'
-	}
-    import pdb;pdb.set_trace()
-    
-    try:
-        response = requests.request('GET', url, headers=headers)
-    except requests.exceptions.ConnectionError as error:
-        print(error)
+        "accept": "application/json",
+        "resourceversion": "v4",
+        "app_id": API_APP_ID,
+        "app_key": API_APP_KEY,
+    }
 
-    if response.status_code == 200:
-        flightList = response.json()
-        print('found {} flights.'.format(len(flightList['flights'])))
-        for flight in flightList['flights']:
-            print('Found flight with name: {} scheduled on: {} at {}'.format(
-                flight['flightName'],
-                flight['scheduleDate'],
-                flight['scheduleTime']))
-    else:
-        print(f"Oops something went wrong, Http response code: {response.status_code} - {response.text}")
+    all_flights = []
+    page = 200
+    while True:
+        url = f"https://api.schiphol.nl/public-flights/flights?scheduleDate={today}&includedelays=false&page={page}&toScheduleDate={tomorrow}"
+        response = requests.request("GET", url, headers=headers)
+        if response.status_code == 200:
+            flights = response.json()
+            if not flights["flights"]:
+                break
+            else:
+                for flight in flights["flights"]:
+                    all_flights.append(flight)
+                page += 1
+        else:
+            print(
+                f"Something went wrong, Http response code: {response.status_code} - {response.text}"
+            )
+            break
+
+    ti.xcom_push("flights_raw", {today: all_flights})
