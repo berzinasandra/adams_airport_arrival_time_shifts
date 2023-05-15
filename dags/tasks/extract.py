@@ -1,7 +1,7 @@
 import requests
-import os
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from time import sleep
 from airflow.models import Variable
 
 SECRET_API_APP_ID = Variable.get("SECRET_API_APP_ID")
@@ -38,6 +38,8 @@ def extract_data_from_api(ti, execution_date) -> None:
                 for flight in flights["flights"]:
                     all_flights.append(flight)
                 page += 1
+                print(f"PAGE IS {page}")
+                sleep(10)
         else:
             print(
                 f"Something went wrong, Http response code: {response.status_code} - {response.text}"
