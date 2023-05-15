@@ -1,2 +1,4 @@
 logs
 plugins
+airflow_variables.json
+airflow_connections.json
