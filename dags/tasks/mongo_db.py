@@ -3,12 +3,11 @@ from datetime import datetime
 from airflow.exceptions import AirflowFailException
 from airflow.models import Variable
 
-MONGO_DB_USER = Variable.get("MONGO_DB_USER")
-MONGO_DB_PASSWORD = Variable.get("MONGO_DB_PASSWORD")
+SECRET_MONGO_DB_USER = Variable.get("SECRET_MONGO_DB_USER")
+SECRET_MONGO_DB_PASSWORD = Variable.get("SECRET_MONGO_DB_PASSWORD")
 
 MONGO_DB_DATABSE = "flights"
 MONGO_DB_COLLECTION = "flight_raw"
-
 
 def _create_connection_with_collection():
     """Creates connection woth MongoDB collection
@@ -17,7 +16,7 @@ def _create_connection_with_collection():
         conncetion with MongoDB collection
     """
     url = pymongo.MongoClient(
-        f"mongodb+srv://{MONGO_DB_USER}:{MONGO_DB_PASSWORD}@cluster0.b52spga.mongodb.net/"
+        f"mongodb+srv://{SECRET_MONGO_DB_USER}:{SECRET_MONGO_DB_PASSWORD}@cluster0.b52spga.mongodb.net/"
     )
     
     db = url[MONGO_DB_DATABSE]
@@ -25,7 +24,7 @@ def _create_connection_with_collection():
     return collection
 
 
-def upload_to_mongo(ti, **context) -> None:
+def upload_to_mongo(ti) -> None:
     """Uploads data from Airflow Xcom to MongoDB
 
     Args:
@@ -37,6 +36,9 @@ def upload_to_mongo(ti, **context) -> None:
     try:
         collection = _create_connection_with_collection()
         data = ti.xcom_pull(key="flights_raw")
+        if not data:
+            print(f"NO data was picked up from Xcom")
+            raise AirflowFailException
         today = list(data.keys())[0]
         data = {"_id": today, "data": data[today]}
         collection.save(data)

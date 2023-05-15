@@ -4,8 +4,8 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from airflow.models import Variable
 
-API_APP_ID = Variable.get("secret_API_APP_ID")
-API_APP_KEY = Variable.get("secret_API_APP_KEY")
+SECRET_API_APP_ID = Variable.get("SECRET_API_APP_ID")
+SECRET_API_APP_KEY = Variable.get("SECRET_API_APP_KEY")
 
 
 def extract_data_from_api(ti, execution_date) -> None:
@@ -21,12 +21,12 @@ def extract_data_from_api(ti, execution_date) -> None:
     headers = {
         "accept": "application/json",
         "resourceversion": "v4",
-        "app_id": API_APP_ID,
-        "app_key": API_APP_KEY,
+        "app_id": SECRET_API_APP_ID,
+        "app_key": SECRET_API_APP_KEY,
     }
 
     all_flights = []
-    page = 200
+    page = 1
     while True:
         url = f"https://api.schiphol.nl/public-flights/flights?scheduleDate={today}&includedelays=false&page={page}&toScheduleDate={tomorrow}"
         response = requests.request("GET", url, headers=headers)
