@@ -1,7 +1,7 @@
 # Technical assignment - Amsterdam Airport Schiphol arrival time shifts
 
 ## The aim:
-The pipeline is built to extract from Airport Schiphol API flight data on a daily basis and extract arrival flights and present arrival flight time shifts - arriving earlier or later.
+The pipeline is built to extract from Airport Schiphol [API] (https://www.schiphol.nl/en/developer-center/)  flight data on a daily basis and extract arrival flights and present arrival flight time shifts - arriving earlier or later.
 
 ## A structure of the pipeline:
 The pipeline is built using Airflow and runs daily.
@@ -14,6 +14,6 @@ The pipeline is built using Airflow and runs daily.
 
 ## To run pipeline locally:
 You will need [Docker](https://www.docker.com/).
-To start up Airflow run ```docker compose up```
+To start up Airflow run ```docker compose build``` and  ```docker compose up```.
 When airflow has booted up, you can open its interface by navigating to 
 <http://localhost:8080> in your web browser. Username and password is ```airflow```  
