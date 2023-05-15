@@ -3,3 +3,4 @@ dnspython
 pymango
 pymango[srv]
 apache-airflow-providers-mongo
+ansible-vault

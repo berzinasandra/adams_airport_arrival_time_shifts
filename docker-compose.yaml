@@ -76,7 +76,11 @@ x-airflow-common:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
-    - ./src:/opt/airflow/src
+    - ./airflow_connections.json:/opt/airflow/airflow_connections.json 
+    - ./encrypted_variables.yml:/opt/airflow/encrypted_variables.yml
+    - ./encrypted_connections.yml:/opt/airflow/encrypted_connections.yml
+    - ./entrypoint.sh:/opt/airflow/entrypoint.sh
+    - ./vault_password.txt:/opt/airflow/vault_password.txt
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
