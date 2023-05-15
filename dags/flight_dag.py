@@ -12,7 +12,7 @@ from tasks.transform import save_arrival_time_shifts
 
 args = {
     'start_date': datetime.datetime(2022, 9, 1),
-    'end_date': datetime.datetime(2022, 9, 3),
+    'end_date': datetime.datetime(2022, 9, 7),
     'depends_on_past': True,
     'wait_for_downstream': True,
 }
@@ -25,6 +25,10 @@ with DAG(
     dag_id="flight-pipeline",
     schedule_interval="@daily",
     default_args=args,
+    max_active_runs=1,
+    max_active_tasks=1,
+    concurrency= 1,
+    catchup=True
 ) as dag:
 
     start_job = DummyOperator(
