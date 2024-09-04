@@ -1,4 +1,4 @@
-# Technical assignment - Amsterdam Airport Schiphol arrival time shifts
+# Amsterdam Airport Schiphol arrival time shifts
 
 ## The aim:
 The pipeline is built to extract from Airport Schiphol [API](https://www.schiphol.nl/en/developer-center/) flight data on a daily basis and extract arrival flights and present arrival flight time shifts - arriving earlier or later.
